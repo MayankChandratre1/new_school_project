@@ -18,7 +18,7 @@ async function loadFontFromURL(url, familyName) {
   // }
   // const fontBuffer = await response.arrayBuffer();
   // fs.writeFileSync(fontPath, Buffer.from(fontBuffer));
-  registerFont(fontPath, { family: familyName });
+  registerFont(url, { family: familyName });
   
 }
 
