@@ -10,7 +10,7 @@ import os from 'os';
 
 async function loadFontFromURL(url, familyName) {
   const tempDir = os.tmpdir(); 
-  const fontPath = path.join(tempDir, `ARIAL.TTF`);
+  const fontPath = path.join(tempDir, `.fonts/ARIAL.TTF`);
 
   // const response = await fetch(url);
   // if (!response.ok) {
