@@ -147,7 +147,7 @@ export const submitFormTeacher = async (req, res) => {
             teacherId,
             answers
         })
-
+        
         if(school && teacher && submittedForStudent){
             const attachment = await generateCouponImage(totalPoints,submittedForStudent.name, teacher.name,teacher.subject,new Date().toDateString(),school.logo,school.name,teacher.email, submittedForStudent.parentEmail);
         const info = `Form ${form.formName} submitted by ${teacher.name} for ${submittedForStudent.name} with ${totalPoints} points`
