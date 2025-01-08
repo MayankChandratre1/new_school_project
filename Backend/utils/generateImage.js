@@ -4,22 +4,10 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createCanvas, loadImage, registerFont } from 'canvas';
-import fetch from 'node-fetch';
-import fs from 'fs';
-import os from 'os';
 
-async function loadFontFromURL(url, familyName) {
-  const tempDir = os.tmpdir(); 
-  const fontPath = path.join(tempDir, `./fonts/ARIAL.TTF`);
 
-  // const response = await fetch(url);
-  // if (!response.ok) {
-  //   throw new Error(`Failed to fetch font: ${response.statusText}`);
-  // }
-  // const fontBuffer = await response.arrayBuffer();
-  // fs.writeFileSync(fontPath, Buffer.from(fontBuffer));
+function loadFontFromURL(url, familyName) {
   registerFont(url, { family: familyName });
-  
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -35,33 +23,33 @@ export const generateCouponImage = async (
   parentEmail,
 ) => {
   try {
-    await loadFontFromURL(path.join(__dirname, '../fonts/ARIAL.TTF'),'Arial')
+    loadFontFromURL(path.join(__dirname, '../fonts/ARIAL.TTF'),'Arial')
     const backgroundImage = await loadImage(path.join(__dirname, './school_token.png'));
-    // const backgroundImage = await loadImage(
-    //   'https://res.cloudinary.com/dvsl1aslo/image/upload/v1735839196/school_token_qvqoxg.png'
-    // );
     const schoolLogo = await loadImage(schoolLogoURL);
 
     const canvas = createCanvas(690, 400)
     const ctx = canvas.getContext('2d')
 
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    ctx.drawImage(schoolLogo, 80, 80, 80, 80);
-
-  
-    ctx.font = '20px Arial';
+    
+    
+    ctx.font = '15px Arial';
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     console.log(ctx.font);
     
-    ctx.fillText(schoolName, canvas.width / 2, 40);
-    ctx.fillText(`Student: ${student}`, canvas.width / 2, 150);
-    ctx.fillText(`No. of Tokens: ${noOfTokens}`, canvas.width / 2, 180);
-    ctx.fillText(`Teacher: ${teacher} (${subject})`, canvas.width / 2, 200);
-    ctx.fillText(`Teacher Email: ${teacherEmail}`, canvas.width / 2, 230);
-    ctx.fillText(`Parent Email: ${parentEmail}`, canvas.width / 2, 250);
-    ctx.fillText(`Date: ${date}`, canvas.width / 2, 300);
+    ctx.fillText(`VALID ONLY AT ${schoolName.toUpperCase()} STORE`, canvas.width / 2, 40);
+    ctx.font = '20px Arial'
+    ctx.fillText(`Awarded to: ${student.toUpperCase()}`, canvas.width / 2, 150);
+    ctx.font = '45px Arial'
+    ctx.fillText(`${noOfTokens} E-TOKENS`, canvas.width / 2, 180);
+    ctx.drawImage(schoolLogo, canvas.width/2 - 30, 200, 60, 60);
+    ctx.font = '15px Arial'
+    ctx.fillText(`EARNED AT ${subject.toUpperCase()} CLASS`, canvas.width / 2, 270);
+    ctx.fillText(`ON ${date}`, canvas.width / 2, 290);
+    ctx.fillText(`AWARDED BY TEACHER: ${teacher}`, canvas.width / 2, 310);
+    ctx.fillText(`Parents: ${parentEmail}`, canvas.width / 2, 350);
 
     return canvas.toBuffer();
   } catch (error) {
@@ -71,16 +59,5 @@ export const generateCouponImage = async (
 };
 
 
-async function testLoadImage() {
-    try {
-        const __dirname = dirname(fileURLToPath(import.meta.url));
-      const imgPath = path.join(__dirname, './school_token.png');
-      console.log('Loading image from path:', imgPath);
-      const image = await loadImage(imgPath);
-      console.log('Image loaded successfully:', image);
-      return image
-    } catch (error) {
-      console.error('Error loading image:', error);
-    }
-  }
+
 

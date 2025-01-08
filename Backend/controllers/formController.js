@@ -164,6 +164,7 @@ export const submitFormTeacher = async (req, res) => {
 
         const pointsHistory = await PointsHistory.create({
             formId: form._id,
+            formType:form.formType,
             formName: form.formName,
             formSubmissionId: formSubmission._id,
             submittedById: teacherId,
