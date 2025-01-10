@@ -69,9 +69,9 @@
 //           </div>
 //           <div className="flex gap-4">
 //             <Button variant={"outline"} onClick={()=> navigate("/addteacher")}>Add Teacher</Button>
-//             <Button variant={"outline"} onClick={()=> navigate("/viewstudent")}>View Teacher</Button>
+//             <Button variant={"outline"} onClick={()=> navigate("/students")}>View Teacher</Button>
 //             <Button variant={"outline"} onClick={()=> navigate("/addstudent")}>Add Students</Button>
-//             <Button variant={"outline"} onClick={()=> navigate("/viewstudent")}>View Students</Button>
+//             <Button variant={"outline"} onClick={()=> navigate("/students")}>View Students</Button>
 //           </div>
 //         </div>
 //       </div>
