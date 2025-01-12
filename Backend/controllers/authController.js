@@ -101,7 +101,8 @@ export const sendOtp = async (req, res) => {
             return res.status(404).json({ message: "User Not Found" });
         }
 
-        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
 
         const newOtp = new Otp({
             userId: user._id,
