@@ -11,7 +11,7 @@ async function loadRemoteImage(url) {
   if (!response.ok) {
     throw new Error(`Failed to fetch image from URL: ${url}`);
   }
-  const buffer = await response.buffer();
+  const buffer = await response.arrayBuffer();
   return await loadImage(buffer);
 }
 
