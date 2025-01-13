@@ -4,16 +4,7 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createCanvas, loadImage, registerFont } from 'canvas';
-import fetch from 'node-fetch';
 
-async function loadRemoteImage(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image from URL: ${url}`);
-  }
-  const buffer = await response.arrayBuffer();
-  return await loadImage(buffer);
-}
 
 
 function loadFontFromURL(url, familyName) {
@@ -35,8 +26,11 @@ export const generateCouponImage = async (
   try {
     loadFontFromURL(path.join(__dirname, '../fonts/courbd.ttf'),'Courier New Bold')
     const backgroundImage = await loadImage(path.join(__dirname, './school_token.png'));
-    const schoolLogo = await loadRemoteImage(schoolLogoURL);
-
+    console.log(backgroundImage);
+    
+    const schoolLogo = await loadImage(schoolLogoURL);
+    console.log(schoolLogo);
+    
     const canvas = createCanvas(690, 400)
     const ctx = canvas.getContext('2d')
 
