@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 });
 
 
-export const sendEmail = async (to, subject, text, html, attachment) => {
+export const sendEmail = async (to, subject, text, html, attachment, attachmentName) => {
     try {
         let info;
         if(attachment)
@@ -26,7 +26,7 @@ export const sendEmail = async (to, subject, text, html, attachment) => {
             html:html,
             attachments: [
                 {
-                  filename: 'coupon.png',
+                  filename: attachmentName || 'coupon.png',
                   content: attachment,
                   cid: 'couponImage', // Content-ID for referencing in the email body
                 },
