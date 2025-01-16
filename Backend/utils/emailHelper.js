@@ -23,7 +23,7 @@ export const emailGenerator = async (form, {
             subject = `GOOD NEWS, YOU EARNED ${points} E-TOKENS!`
             body = `
             <p>Congratulations <strong>${student.name}</strong>!</p>
-            <p>The <strong>${teacher.subject}</strong> teacher, <strong>${teacher.name}</strong>, has just awarded you with <strong>${points} E-Tokens</strong> for achieving your goals today.</p>
+            <p>The <strong>${teacher?.subject || "N/A"}</strong> teacher, <strong>${teacher.name}</strong>, has just awarded you with <strong>${points} E-Tokens</strong> for achieving your goals today.</p>
             <p>Please, check your E-Token's balance and exchange them at the AN Center or school store.</p>
             <p>Keep up the good work!!!</p>
             <p>
@@ -37,7 +37,7 @@ export const emailGenerator = async (form, {
                     points,
                     student.name,
                     teacher.name,
-                    teacher.subject,
+                    teacher?.subject || "N/A",
                     new Date().toDateString(),
                     school.logo,
                     school.name,
@@ -118,7 +118,7 @@ export const emailGenerator = async (form, {
             break;
         }
     }
-    if (form.teacherEmail && teacher.recieveMails)
+    if (form.teacherEmail && teacher?.recieveMails)
         sendEmail(
          teacher.email,
          subject,
