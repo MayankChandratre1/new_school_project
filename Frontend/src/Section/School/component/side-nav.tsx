@@ -6,11 +6,8 @@ import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/analytics', label: 'Analytics', icon: School },
-  // { href: '/addteacher', label: 'Add Teacher', icon: UserPlus },
-  // { href: '/addstudent', label: 'Add Student', icon: UserPlus },
   { href: '/teacher', label: 'Teachers', icon: Users },
   { href: '/students', label: 'Students', icon: BookOpen },
-  // { href: '/createform', label: 'Create Forms', icon: ClipboardIcon },
   { href: '/viewforms', label: 'Forms', icon: ClipboardIcon },
   { href: '/history', label: 'Point History', icon: ClipboardIcon },
 ];
@@ -24,7 +21,6 @@ export function SideNav() {
   };
 
   const handleLogout = () => {
-    // Remove token from localStorage and sessionStorage
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
     navigate('/');
