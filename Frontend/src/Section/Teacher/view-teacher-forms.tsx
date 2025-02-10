@@ -2,16 +2,17 @@ import  { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { FormDetails } from '@/Section/School/component/form-details'
-import { CalendarIcon, ClipboardIcon, StarIcon, MinusCircleIcon } from 'lucide-react'
-import { getForms } from '@/api'
+import { CalendarIcon, ClipboardIcon, StarIcon, MinusCircleIcon, Trash2Icon } from 'lucide-react'
+import { deleteForm, getForms } from '@/api'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 import { Form } from '@/lib/types'
-
+import { AxiosError } from 'axios'
 
 export default function ViewTeacherForms() {
   const [forms, setForms] = useState<Form[]>([])
   const [selectedForm, setSelectedForm] = useState<Form | null>(null)
+  const [deleteModal, setDeleteModal] = useState<{ form: Form | null, open: boolean }>({ form: null, open: false })
 
   const navigate = useNavigate()
 
@@ -52,6 +53,46 @@ export default function ViewTeacherForms() {
     }
   }
 
+  const openDeleteModal = (form: Form) => {
+    setDeleteModal({ form, open: true })
+  }
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ form: null, open: false })
+  }
+
+  const removeFromState = (id: string) => {
+    setForms(prev => prev.filter(form => form._id !== id))
+  }
+
+  const removeForm = async (id: string) => {
+    const removedForm = forms.filter(form => form._id === id)[0]
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error("Unauthorized request")
+      const res = await deleteForm(id, token)
+      removeFromState(id)
+      if (res)
+        return toast({
+          title: "Success",
+          description: `Successfully Deleted form ${res.formName}`
+        })
+    } catch (err) {
+      setForms([...forms, removedForm])
+      console.log(err)
+      if (err instanceof AxiosError)
+        toast({
+          title: "Error",
+          description: err.message
+        })
+      else
+        toast({
+          title: "Error",
+          description: "Something Went Wrong"
+        })
+    }
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Forms</h1>
@@ -70,19 +111,64 @@ export default function ViewTeacherForms() {
                   {new Date(form.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <Button
-                className="mt-4 w-full bg-[#ffcdd3] hover:bg-[#ffcdd3] text-black"
-                onClick={() => navigate(`/teachers/submitform/${form._id}`)}
-              >
-                Use Form
-              </Button>
+              <div className='flex items-center mt-4 gap-2'>
+                <Button
+                  className="flex-1 bg-[#ffcdd3] hover:bg-[#ffcdd3] text-black"
+                  onClick={() => setSelectedForm(form)}
+                >
+                  View Details
+                </Button>
+                <Button
+                  className="flex-1 bg-[#ffcdd3] hover:bg-[#ffcdd3] text-black"
+                  onClick={() => navigate(`/teachers/submitform/${form._id}`)}
+                >
+                  Use Form
+                </Button>
+                <Button
+                  className="bg-[#c7b8da] hover:bg-[#c7b8da]"
+                  onClick={() => openDeleteModal(form)}
+                >
+                  <Trash2Icon />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
+      {deleteModal.open && deleteModal.form && (
+        <FormDeleteModal form={deleteModal.form} onClose={closeDeleteModal} remove={removeForm} />
+      )}
       {selectedForm && (
         <FormDetails form={selectedForm} onClose={() => setSelectedForm(null)} />
       )}
+    </div>
+  )
+}
+
+const FormDeleteModal = ({ form, onClose, remove }: { form: Form, onClose: () => void, remove: (id:string) => Promise<any> }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-4 rounded-md w-72">
+        <h2 className="text-xl font-semibold mb-4">Delete Form</h2>
+        <p>Are you sure you want to delete form <span className="font-semibold">{form.formName}</span>?</p>
+        <div className="flex justify-end mt-4">
+          <Button
+            variant="ghost"
+            className="mr-4"
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              remove(form._id)
+              onClose()
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -51,9 +51,9 @@ const studentSchema = new mongoose.Schema({
     default: null,
   },
   grade: {
-    type: Number,
+    type: String,
     required: true,
-    min: 1
+    default: 1
   },
 });
 
