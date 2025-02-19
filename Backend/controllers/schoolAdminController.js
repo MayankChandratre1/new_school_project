@@ -1,4 +1,3 @@
-
 import School from "../models/School.js"
 import User from "../models/Admin.js"
 import bcrypt from "bcryptjs"
@@ -9,6 +8,23 @@ import { uploadImageFromDataURI } from "../utils/cloudinary.js"
 import Admin from "../models/Admin.js"
 import PointsHistory from "../models/PointsHistory.js"
 import mongoose from "mongoose"
+import { reportEmailGenerator } from "../utils/emailHelper.js"
+
+const getSchoolIdFromUser = async (userId) => {
+    // Try finding user as admin first
+    const admin = await Admin.findById(userId);
+    if (admin) {
+        return admin.schoolId
+    }
+
+    // If not admin, try finding as teacher
+    const teacher = await Teacher.findById(userId);
+    if (teacher) {
+        return teacher.schoolId;
+    }
+
+    throw new Error('User not authorized');
+};
 
 export const addSchool = async (req, res) => {
     const { name, address, district, state, country } = req.body;
@@ -383,3 +399,43 @@ export const getMonthlyStats = async (req, res) => {
         return res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
+export const sendReport = async (req, res) => {
+    try {
+        const { email } = req.params;
+        // The file should be available in req.files or req.file depending on your middleware
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        // Now file data is properly available
+        const fileData = {
+            buffer: file.buffer, // Binary data of the file
+            originalname: file.originalname,
+            mimetype: file.mimetype
+        };
+
+        await reportEmailGenerator(fileData.buffer, fileData.originalname, email);
+        return res.status(200).json({ message: "Report sent successfully" });
+    } catch (error) {
+        console.error("Error in sendReport:", error);
+        return res.status(500).json({ message: "Server Error", error: error.message });
+    }
+}
+
+export const resetStudentRoster = async (req, res) => {
+    try {
+        const schoolId = await getSchoolIdFromUser(req.user.id);
+        await PointsHistory.deleteMany({
+            schoolId,
+        });
+        await Student.deleteMany({
+            schoolId
+        })
+        return res.status(200).json({ message: "Student roster reset successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Server Error", error: error.message });
+    }
+}

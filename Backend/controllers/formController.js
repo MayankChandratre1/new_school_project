@@ -8,6 +8,7 @@ import School from "../models/School.js";
 import Teacher from "../models/Teacher.js";
 import Student from "../models/Student.js";
 import { emailGenerator } from "../utils/emailHelper.js";
+import Feedback from "../models/Feedback.js";
 export const createForm = async (req, res) => {
   const {
     formName,
@@ -202,6 +203,19 @@ export const submitFormTeacher = async (req, res) => {
       submittedAt
     });
 
+    if(form.formType == "Feedback"){
+      const feedback = answers.reduce((acc, curr) => acc + curr.answer, "");
+      await Feedback.create({
+        schoolId: teacher.schoolId,
+        submittedById: teacherId,
+        submittedByName: teacher.name,
+        submittedForId: submittedFor,
+        submittedForName: submittedForStudent.name,
+        submittedBySubject: teacher.subject,
+        feedback
+      });
+    }
+
     if (school && teacher && submittedForStudent) {
       emailGenerator(form, {
         points: totalPoints,
@@ -263,6 +277,19 @@ export const submitFormAdmin = async (req, res) => {
       schoolId: schoolAdmin.schoolId,
       submittedAt
     });
+
+    if(form.formType == "Feedback"){
+      const feedback = answers.reduce((acc, curr) => acc + curr.answer, "");
+      await Feedback.create({
+        schoolId: schoolAdmin.schoolId,
+        submittedById: schoolAdmin._id,
+        submittedByName: schoolAdmin.name,
+        submittedForId: submittedFor,
+        submittedForName: submittedForStudent.name,
+        submittedBySubject: "System Manager",
+        feedback
+      });
+    }
 
     if (school && submittedForStudent) {
       emailGenerator(form, {

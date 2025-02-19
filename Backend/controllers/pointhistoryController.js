@@ -4,6 +4,8 @@ import School from '../models/School.js';
 import Teacher from '../models/Teacher.js';
 import Student from "../models/Student.js";
 import Admin from '../models/Admin.js';
+import FormSubmissions from '../models/FormSubmissions.js';
+import Feedback from '../models/Feedback.js';
 
 // Helper function to get the start of the educational year
 const getEducationalYearStart = () => {
@@ -709,3 +711,59 @@ export const getPointsByStudent = async (req, res) => {
     }
 }
 
+export const getStudentPointsHistory = async (req, res) => {
+    try {
+        const schoolId = await getSchoolIdFromUser(req.user.id);
+        const studentId = req.params.id;
+        const yearStart = getEducationalYearStart();
+        const today = new Date();
+        const {grade} = req.body;
+
+        
+        const pointsHistory = await PointsHistory.aggregate([{
+            $match: {
+                schoolId: new mongoose.Types.ObjectId(schoolId),
+                submittedForId: new mongoose.Types.ObjectId(studentId),
+                submittedAt: { 
+                    $gte: yearStart, 
+                    $lte: today 
+                }
+            }
+        },]);
+
+        const feedbackData = await Feedback.find({ submittedForId: studentId });
+
+
+        const totalPoints = {
+            eToken: 0,
+            oopsies:0,
+            withdraw:0
+        }
+
+        pointsHistory.forEach(point => {
+            if(point.formType === 'AwardPoints') {
+                totalPoints.eToken += point.points;
+            } else if(point.formType === 'DeductPoints') {
+                totalPoints.oopsies += point.points;
+            } else {
+                totalPoints.withdraw += point.points;
+            }
+        });
+
+        const teacher = await Teacher.find({
+            schoolId: schoolId,
+            grade: grade
+        });
+
+
+
+        res.status(200).json({ 
+            data: pointsHistory, 
+            feedback: await Promise.all(feedbackData),
+            totalPoints,
+            teacher
+         });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
