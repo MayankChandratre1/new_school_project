@@ -112,6 +112,7 @@ export const getForms = async (req, res) => {
         forms = await Form.find({ 
           schoolId: user.schoolId,
         });
+        forms = forms.filter(form => form.formType != "PointWithdraw")
       }else{
         forms = await Form.find({
           schoolId: user.schoolId,

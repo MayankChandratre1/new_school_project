@@ -154,8 +154,8 @@ const EducationYearChart = ({studentId}:{
         ))}
       </div>
 
-      <div className="w-full h-[450px] ">
-        <ResponsiveContainer width="100%" height="100%"   >
+      <div id="graph" className="w-full h-[450px] ">
+        <ResponsiveContainer  width="100%" height="100%"   >
           <ComposedChart
             data={chartData}
             margin={{
