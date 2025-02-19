@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
     "seed": "node seed.js",
-    "build": "npm run seed && npm run start"
+    "build": "npm run seed && npm run start",
+     "vercel-build": "apt-get update && apt-get install -y build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev && npm install"
   },
   "keywords": [],
   "author": "",
