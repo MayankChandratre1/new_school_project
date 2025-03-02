@@ -55,6 +55,18 @@ const studentSchema = new mongoose.Schema({
     required: true,
     default: 1
   },
+  isParentOneEmailVerified:{
+    type:Boolean,
+    default: false
+  },
+  isParentTwoEmailVerified:{
+    type:Boolean,
+    default: false
+  },
+  emailVerificationCode:{
+    type:String,
+    default: null
+  }
 });
 
 studentSchema.pre('save', function (next) {
